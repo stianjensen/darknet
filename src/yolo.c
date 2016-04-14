@@ -222,7 +222,7 @@ void validate_yolo(char *cfgfile, char *weightfile)
     fprintf(stderr, "Total Detection Time: %f Seconds\n", (double)(time(0) - start));
 }
 
-void validate_yolo_recall(char *cfgfile, char *weightfile, char *filename)
+void validate_yolo_recall(char *cfgfile, char *weightfile, char *filename, float iou_thresh)
 {
     network net = parse_network_cfg(cfgfile);
     if(weightfile){
@@ -256,7 +256,6 @@ void validate_yolo_recall(char *cfgfile, char *weightfile, char *filename)
     int i=0;
 
     float thresh = .001;
-    float iou_thresh = .5;
     float nms = 0;
 
     int total = 0;
@@ -407,6 +406,7 @@ void run_yolo(int argc, char **argv)
     }
 
     float thresh = find_float_arg(argc, argv, "-thresh", .2);
+    float iou_thresh = find_float_arg(argc, argv, "-iouthresh", .5);
     int cam_index = find_int_arg(argc, argv, "-c", 0);
     if(argc < 4){
         fprintf(stderr, "usage: %s %s [train/test/valid] [cfg] [weights (optional)]\n", argv[0], argv[1]);
@@ -419,6 +419,6 @@ void run_yolo(int argc, char **argv)
     if(0==strcmp(argv[2], "test")) test_yolo(cfg, weights, filename, thresh);
     else if(0==strcmp(argv[2], "train")) train_yolo(cfg, weights);
     else if(0==strcmp(argv[2], "valid")) validate_yolo(cfg, weights);
-    else if(0==strcmp(argv[2], "recall")) validate_yolo_recall(cfg, weights, filename);
+    else if(0==strcmp(argv[2], "recall")) validate_yolo_recall(cfg, weights, filename, iou_thresh);
     else if(0==strcmp(argv[2], "demo")) demo_yolo(cfg, weights, thresh, cam_index, filename);
 }
