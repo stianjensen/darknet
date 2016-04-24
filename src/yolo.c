@@ -133,7 +133,7 @@ void print_yolo_detections(FILE **fps, char *id, box *boxes, float **probs, int 
     }
 }
 
-void validate_yolo(char *cfgfile, char *weightfile)
+void validate_yolo(char *cfgfile, char *weightfile, char *filename, float iou_thresh)
 {
     network net = parse_network_cfg(cfgfile);
     if(weightfile){
@@ -143,8 +143,8 @@ void validate_yolo(char *cfgfile, char *weightfile)
     fprintf(stderr, "Learning Rate: %g, Momentum: %g, Decay: %g\n", net.learning_rate, net.momentum, net.decay);
     srand(time(0));
 
-    char *base = "results/comp4_det_test_";
-    list *plist = get_paths("data/voc.2007.test");
+    char *base = "kitti/validated_";
+    list *plist = get_paths(filename);
     //list *plist = get_paths("data/voc.2012.test");
     char **paths = (char **)list_to_array(plist);
 
@@ -170,7 +170,6 @@ void validate_yolo(char *cfgfile, char *weightfile)
 
     float thresh = .001;
     int nms = 1;
-    float iou_thresh = .5;
 
     int nthreads = 2;
     image *val = calloc(nthreads, sizeof(image));
@@ -418,7 +417,7 @@ void run_yolo(int argc, char **argv)
     char *filename = (argc > 5) ? argv[5]: 0;
     if(0==strcmp(argv[2], "test")) test_yolo(cfg, weights, filename, thresh);
     else if(0==strcmp(argv[2], "train")) train_yolo(cfg, weights);
-    else if(0==strcmp(argv[2], "valid")) validate_yolo(cfg, weights);
+    else if(0==strcmp(argv[2], "valid")) validate_yolo(cfg, weights, filename, iou_thresh);
     else if(0==strcmp(argv[2], "recall")) validate_yolo_recall(cfg, weights, filename, iou_thresh);
     else if(0==strcmp(argv[2], "demo")) demo_yolo(cfg, weights, thresh, cam_index, filename);
 }
