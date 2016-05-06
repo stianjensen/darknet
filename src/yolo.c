@@ -77,7 +77,7 @@ void train_yolo(char *cfgfile, char *weightfile)
            (i <= 2000 && i % 200 == 0) ||
            (i == 50)) {
             char buff[256];
-            sprintf(buff, "%s/%s_%d.weights", backup_directory, base, i);
+            sprintf(buff, "%s/%s_%05d.weights", backup_directory, base, i);
             save_weights(net, buff);
         }
         free_data(train);
